@@ -3,13 +3,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-
 class ChartPainter extends CustomPainter {
   final int selectedHour;
 
   ChartPainter({required this.selectedHour});
 
-  static final List<double> dataPoints = [
+  static final List<double> dataPoints = [0,
     24,
     91,
     10,
@@ -19,13 +18,8 @@ class ChartPainter extends CustomPainter {
     74,
     8,
     13,
-    14,
     15,
     86,
-    17,
-    18,
-    25,
-    3,
     122,
     5,
     20,
@@ -33,7 +27,7 @@ class ChartPainter extends CustomPainter {
     8,
     13,
     14,
-    15,
+    15,134
   ];
   static final List<double> shadedPoints = [
     24,
@@ -49,11 +43,6 @@ class ChartPainter extends CustomPainter {
     15,
     56,
     17,
-    18,
-    65,
-    8,
-    122,
-    5,
   ];
 
   @override
@@ -208,6 +197,73 @@ class ChartPainter extends CustomPainter {
         );
         startY += dashHeight + dashSpace;
       }
+    } else if (selectedHour >= points.length) {
+      final dx = points.last.dx;
+      const double dashHeight = 5.0;
+      const double dashSpace = 3.0;
+      double startY = 0.0;
+      while (startY < size.height) {
+        canvas.drawLine(
+          Offset(dx, startY),
+          Offset(dx, startY + dashHeight),
+          dashedLinePaint,
+        );
+        startY += dashHeight + dashSpace;
+      }
+    }
+
+    // Draw tooltip if selected hour is the last hour
+    if (selectedHour == dataPoints.length - 1) {
+      // Find the smallest and largest values in dataPoints
+      final minValue = dataPoints.reduce(min);
+      final maxValue = dataPoints.reduce(max);
+
+      // Find their corresponding points
+      final minIndex = dataPoints.indexOf(minValue);
+      final maxIndex = dataPoints.indexOf(maxValue);
+      final minX = minIndex * stepX;
+      final maxX = maxIndex * stepX;
+      final minYGraph = dataPoints.reduce(min);
+      shadedPoints.reduce(max);
+      final minText = '$minValue';
+      final maxText = '$maxValue';
+
+      // Draw tooltip for the minimum value
+      final textSpan = TextSpan(
+        text: minText,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 12,backgroundColor: Colors.white
+        ),
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      final textX = minX + 10;
+      final textY = size.height -
+          ((minValue - minYGraph) / rangeY * size.height) -
+          textPainter.height / 2;
+      textPainter.paint(canvas, Offset(textX, textY));
+
+      // Draw tooltip for the maximum value
+      final textSpanMax = TextSpan(
+        text: maxText,
+        style: const TextStyle(
+            color: Colors.black, fontSize: 12, backgroundColor: Colors.white),
+      );
+      final textPainterMax = TextPainter(
+        text: textSpanMax,
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr,
+      );
+      textPainterMax.layout();
+      final textXMax = maxX-30;
+      final textYMax = size.height  - (maxValue  - minYGraph) / rangeY * size.height - textPainterMax.height / 2;
+      print(textYMax);
+      textPainterMax.paint(canvas, Offset(textXMax, textYMax));
     }
   }
 

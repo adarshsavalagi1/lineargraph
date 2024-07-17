@@ -5,7 +5,7 @@ class TooltipWidget extends StatelessWidget {
   final double bpmValue;
   final Offset position;
 
-  TooltipWidget({
+  const TooltipWidget({
     super.key,
     required this.selectedHour,
     required this.bpmValue,
