@@ -31,4 +31,22 @@ jobs:
           echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
           ls -l 
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+ 
+  
+      - name: Create a directory and file dynamically
+        run: |
+          mkdir -p ${{ env.VERSION_NAME }}+${{ env.VERSION_CODE }}
+          cp  pubspec.yaml ${{ env.VERSION_NAME }}+${{ env.VERSION_CODE }}/pubspec.yaml
+
+      - name: Upload text file to Google Drive
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{ secrets.DRIVE_API }}  # Add your Google Drive credentials in GitHub Secrets
+          filename: "${{ env.VERSION_NAME }}+${{ env.VERSION_CODE }}/pubspec.yaml"
+          folderId: ${{ secrets.FOLDER_ID }} # Specify the Drive folder ID
+          overwrite: "true"
+          mirrorDirectoryStructure: "true"
      
