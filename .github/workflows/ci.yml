@@ -1,0 +1,34 @@
+name: Evie Apk Releases
+ 
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main
+ 
+jobs:
+  build:
+    name: Build Flutter APK
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+ 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.1'
+          cache: true
+          
+      - name: Extract Version Info from pubspec.yaml
+        id: version
+        run: |
+          VERSION_NAME=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d '+' -f1)
+          VERSION_CODE=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d '+' -f2)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          ls -l 
+     
